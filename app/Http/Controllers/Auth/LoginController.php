@@ -73,7 +73,7 @@ class LoginController extends Controller
 
                 return response()->json([
                     "token" => $token,
-                    "usuario_id" => $usuario->id
+                    "usuario" => $usuario
                 ]);
             } catch (JWTException $e) {
                 // something went wrong whilst attempting to encode the token
