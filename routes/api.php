@@ -25,22 +25,15 @@ use Illuminate\Http\Request;
 //    });
 //
 //});
+
+
 Route::get('/', function () {
-    return "Welcome API";
+
 });
 
-$sharedRoutes = function () {
+Route::post('/auth/student-login', 'Auth\LoginController@login');
+Route::get('/student/{student}/getClasses', 'AlunosController@getClasses');
 
-};
-Route::group(['middleware' => 'cors'], function () use ($sharedRoutes) {
-    Route::post('/auth/student-login', 'Auth\LoginController@login');
-
-    Route::group([
-        'middleware' => ['jwt.student', 'jwt.refresh'],
-    ], function () use ($sharedRoutes) {
-
-        $sharedRoutes();
-
-    });
+Route::group(['middleware' => 'auth:api'], function () {
 
 });

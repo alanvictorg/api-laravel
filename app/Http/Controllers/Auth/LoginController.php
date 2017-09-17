@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use App\User;
+use App\Entities\User;
 use Illuminate\Support\Facades\Hash;
 use App\Exceptions\CouldNotCreateTokenException;
 
