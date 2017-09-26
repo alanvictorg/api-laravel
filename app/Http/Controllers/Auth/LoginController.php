@@ -71,10 +71,8 @@ class LoginController extends Controller
 //                $payload = Facades\JWTFactory::make($customClaims);
                 $token = JWTAuth::fromUser($usuario);
 
-                return response()->json([
-                    "token" => $token,
-                    "usuario" => $usuario
-                ]);
+                return response()->json( $usuario
+                );
             } catch (JWTException $e) {
                 // something went wrong whilst attempting to encode the token
                 throw new CouldNotCreateTokenException();

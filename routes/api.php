@@ -32,7 +32,7 @@ Route::get('/', function () {
 });
 
 Route::post('/auth/student-login', 'Auth\LoginController@login');
-Route::get('/student/{student}/getClasses', 'AlunosController@getClasses');
+Route::get('/student/getClasses/{id}', 'AlunosController@getClasses');
 
 Route::group(['middleware' => 'auth:api'], function () {
 
