@@ -2,63 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Entities\Avaliacoe;
-use App\Repositories\AlunoTurmaRepository;
-use App\Repositories\TurmaRepository;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use Illuminate\Support\Facades\Auth;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
-use App\Http\Requests\AlunoCreateRequest;
-use App\Http\Requests\AlunoUpdateRequest;
-use App\Repositories\AlunoRepository;
-use App\Validators\AlunoValidator;
+use App\Http\Requests\AvaliacoeCreateRequest;
+use App\Http\Requests\AvaliacoeUpdateRequest;
+use App\Repositories\AvaliacoeRepository;
+use App\Validators\AvaliacoeValidator;
 
 
-class AlunosController extends Controller
+class AvaliacoesController extends Controller
 {
 
     /**
-     * @var AlunoRepository
+     * @var AvaliacoeRepository
      */
     protected $repository;
 
     /**
-     * @var AlunoValidator
+     * @var AvaliacoeValidator
      */
     protected $validator;
-    /**
-     * @var AlunoTurmaRepository
-     */
-    private $alunoTurmaRepository;
 
-    public function __construct(AlunoRepository $repository,
-                                AlunoValidator $validator,
-                                AlunoTurmaRepository $alunoTurmaRepository
-    )
+    public function __construct(AvaliacoeRepository $repository, AvaliacoeValidator $validator)
     {
         $this->repository = $repository;
-        $this->validator = $validator;
-        $this->alunoTurmaRepository = $alunoTurmaRepository;
-    }
-
-    /**
-     * @return AlunoTurmaRepository
-     */
-    public function getAlunoTurmaRepository()
-    {
-        return $this->alunoTurmaRepository;
-    }
-
-
-    /**
-     * @return AlunoRepository
-     */
-    public function getRepository()
-    {
-        return $this->repository;
+        $this->validator  = $validator;
     }
 
 
@@ -70,37 +41,37 @@ class AlunosController extends Controller
     public function index()
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $alunos = $this->repository->all();
+        $avaliacoes = $this->repository->all();
 
         if (request()->wantsJson()) {
 
             return response()->json([
-                'data' => $alunos,
+                'data' => $avaliacoes,
             ]);
         }
 
-        return view('alunos.index', compact('alunos'));
+        return view('avaliacoes.index', compact('avaliacoes'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  AlunoCreateRequest $request
+     * @param  AvaliacoeCreateRequest $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(AlunoCreateRequest $request)
+    public function store(AvaliacoeCreateRequest $request)
     {
 
         try {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
 
-            $aluno = $this->repository->create($request->all());
+            $avaliacoe = $this->repository->create($request->all());
 
             $response = [
-                'message' => 'Aluno created.',
-                'data' => $aluno->toArray(),
+                'message' => 'Avaliacoe created.',
+                'data'    => $avaliacoe->toArray(),
             ];
 
             if ($request->wantsJson()) {
@@ -112,7 +83,7 @@ class AlunosController extends Controller
         } catch (ValidatorException $e) {
             if ($request->wantsJson()) {
                 return response()->json([
-                    'error' => true,
+                    'error'   => true,
                     'message' => $e->getMessageBag()
                 ]);
             }
@@ -131,16 +102,16 @@ class AlunosController extends Controller
      */
     public function show($id)
     {
-        $aluno = $this->repository->find($id);
+        $avaliacoe = $this->repository->find($id);
 
         if (request()->wantsJson()) {
 
             return response()->json([
-                'data' => $aluno,
+                'data' => $avaliacoe,
             ]);
         }
 
-        return view('alunos.show', compact('aluno'));
+        return view('avaliacoes.show', compact('avaliacoe'));
     }
 
 
@@ -154,32 +125,32 @@ class AlunosController extends Controller
     public function edit($id)
     {
 
-        $aluno = $this->repository->find($id);
+        $avaliacoe = $this->repository->find($id);
 
-        return view('alunos.edit', compact('aluno'));
+        return view('avaliacoes.edit', compact('avaliacoe'));
     }
 
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  AlunoUpdateRequest $request
-     * @param  string $id
+     * @param  AvaliacoeUpdateRequest $request
+     * @param  string            $id
      *
      * @return Response
      */
-    public function update(AlunoUpdateRequest $request, $id)
+    public function update(AvaliacoeUpdateRequest $request, $id)
     {
 
         try {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
 
-            $aluno = $this->repository->update($request->all(), $id);
+            $avaliacoe = $this->repository->update($request->all(), $id);
 
             $response = [
-                'message' => 'Aluno updated.',
-                'data' => $aluno->toArray(),
+                'message' => 'Avaliacoe updated.',
+                'data'    => $avaliacoe->toArray(),
             ];
 
             if ($request->wantsJson()) {
@@ -193,7 +164,7 @@ class AlunosController extends Controller
             if ($request->wantsJson()) {
 
                 return response()->json([
-                    'error' => true,
+                    'error'   => true,
                     'message' => $e->getMessageBag()
                 ]);
             }
@@ -217,30 +188,11 @@ class AlunosController extends Controller
         if (request()->wantsJson()) {
 
             return response()->json([
-                'message' => 'Aluno deleted.',
+                'message' => 'Avaliacoe deleted.',
                 'deleted' => $deleted,
             ]);
         }
 
-        return redirect()->back()->with('message', 'Aluno deleted.');
+        return redirect()->back()->with('message', 'Avaliacoe deleted.');
     }
-
-    public function getClasses($studentid)
-    {
-        $turmas = $this->getAlunoTurmaRepository()->findWhere(['aluno_id' => $studentid]);
-        $disciplinas = [];
-
-        foreach ($turmas as $turma) {
-            $turma = $turma->turma->toArray();
-            $notas = Avaliacoe::where('aluno_id', $studentid)->where('turma_id', $turma['id'])->select('nota1', 'nota2', 'nota3', 'media')->first();
-            if (!empty($notas)) {
-                foreach ($notas->toArray() as $nota) {
-                    array_push($turma, $nota);
-                }
-            }
-            array_push($disciplinas, $turma);
-        }
-        return $disciplinas;
-    }
-
 }

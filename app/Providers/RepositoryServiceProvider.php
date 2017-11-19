@@ -28,6 +28,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(\App\Repositories\TurmaRepository::class, \App\Repositories\TurmaRepositoryEloquent::class);
         $this->app->bind(\App\Repositories\AlunoTurmaRepository::class, \App\Repositories\AlunoTurmaRepositoryEloquent::class);
         $this->app->bind(\App\Repositories\ProfessoreRepository::class, \App\Repositories\ProfessoreRepositoryEloquent::class);
+        $this->app->bind(\App\Repositories\AvaliacoeRepository::class, \App\Repositories\AvaliacoeRepositoryEloquent::class);
         //:end-bindings:
     }
 }
